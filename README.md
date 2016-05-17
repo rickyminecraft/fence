@@ -1,6 +1,6 @@
 # fence
 
-A Sponge plugin to add particule fence
+A Sponge plugin to add particule fences
 
 # usage
 
