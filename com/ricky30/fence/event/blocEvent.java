@@ -233,25 +233,25 @@ public class blocEvent
 				if (Done)
 				{
 					final String set = "Set" + manageSet.loadSetnumber();
-					int PillarNumber = 0;
+					int PoleNumber = 0;
 					if (!config.getNode("fence", "pole", set).getChildrenMap().isEmpty())
 					{
 						for (final Object pillar : config.getNode("fence", "pole", set).getChildrenMap().keySet())
 						{
-							int PillarNumbertmp;
-							PillarNumbertmp = this.config.getNode("fence", "pole", set, pillar.toString(), "Number").getInt();
-							if (PillarNumbertmp > PillarNumber)
+							int PoleNumbertmp;
+							PoleNumbertmp = this.config.getNode("fence", "pole", set, pillar.toString(), "Number").getInt();
+							if (PoleNumbertmp > PoleNumber)
 							{
-								PillarNumber = PillarNumbertmp;
+								PoleNumber = PoleNumbertmp;
 							}
 						}
-						PillarNumber++;
+						PoleNumber++;
 					}
 					this.config.getNode("fence", "pole", set, Nom, "X").setValue(x);
 					this.config.getNode("fence", "pole", set, Nom, "Y").setValue(y);
 					this.config.getNode("fence", "pole", set, Nom, "Z").setValue(z);
 					this.config.getNode("fence", "pole", set, Nom, "world").setValue(Worlduid.toString());
-					this.config.getNode("fence", "pole", set, Nom, "Number").setValue(PillarNumber);
+					this.config.getNode("fence", "pole", set, Nom, "Number").setValue(PoleNumber);
 					fence.plugin.save();
 					player.sendMessage(Text.of("Pole set ",manageSet.loadSetnumber()));
 				}
