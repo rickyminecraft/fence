@@ -34,16 +34,16 @@ public class fenceTask
 		//ajoute les différentes valeurs dans leurs map respectives
 		for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
 		{
-			for (final Object Nom: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
+			for (final Object Name: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
 			{
 				int taille = position.size();
 				int x, y, z, number;
 				World world;
-				x = config.getNode("fence", "pole", Sets.toString(), Nom, "X").getInt();
-				y = config.getNode("fence", "pole", Sets.toString(), Nom, "Y").getInt();
-				z = config.getNode("fence", "pole", Sets.toString(), Nom, "Z").getInt();
-				number = config.getNode("fence", "pole", Sets.toString(), Nom, "Number").getInt();
-				world = Sponge.getServer().getWorld(UUID.fromString(config.getNode("fence", "pole", Sets.toString(), Nom, "world").getString())).get();
+				x = config.getNode("fence", "pole", Sets.toString(), Name, "X").getInt();
+				y = config.getNode("fence", "pole", Sets.toString(), Name, "Y").getInt();
+				z = config.getNode("fence", "pole", Sets.toString(), Name, "Z").getInt();
+				number = config.getNode("fence", "pole", Sets.toString(), Name, "Number").getInt();
+				world = Sponge.getServer().getWorld(UUID.fromString(config.getNode("fence", "pole", Sets.toString(), Name, "world").getString())).get();
 				final Vector3i vecteur = new Vector3i(x, y, z);
 				taille++;
 				Number.put(taille, number);
@@ -85,7 +85,7 @@ public class fenceTask
 			boolean ok = false;
 			final List<Vector3i> SetPositiontmp = new ArrayList<Vector3i>();
 			int Current_Number = 0;
-			int Current_Pillar_Number = 0;
+			int Current_Pole_Number = 0;
 			int Index = 0;
 			while (!ok)
 			{
@@ -93,21 +93,21 @@ public class fenceTask
 				boolean Ok2 = false;
 				while (!Ok2)
 				{
-					if (!SetNumber.contains(Current_Pillar_Number))
+					if (!SetNumber.contains(Current_Pole_Number))
 					{
-						Current_Pillar_Number++;
+						Current_Pole_Number++;
 					}
 					else
 					{
 						Ok2 = true;
 					}
 				}
-				while(SetNumber.get(Index) != Current_Pillar_Number)
+				while(SetNumber.get(Index) != Current_Pole_Number)
 				{
 					Index++;
 				}
 				SetPositiontmp.add(SetPosition.get(Index));
-				Current_Pillar_Number++;
+				Current_Pole_Number++;
 				Index = 0;
 				Current_Number++;
 				if (Current_Number == SetNumber.size())
@@ -130,66 +130,66 @@ public class fenceTask
 	}
 
 	//set sert juste d'indicateur pour debug
-	private static void doSet(List<Vector3i> pillar, List<UUID> World, int Set)
+	private static void doSet(List<Vector3i> pole, List<UUID> World, int Set)
 	{
 		final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();
 		final int Size = Pole.size() -1;
-		// combien de pilier sont pret à traiter
-		int pilier_ready = 0;
-		//on crée les vecteurs de nos 2 piliers
-		Vector3i pilier1 = new Vector3i(0,0,0);
-		Vector3i pilier2 = new Vector3i(0,0,0);
-		//si pas plus d'un pilier référencer, alors on ne fait rien
-		if (pillar.size() > 1)
+		// combien de poteau sont pret à traiter
+		int pole_ready = 0;
+		//on crée les vecteurs de nos 2 poteaux
+		Vector3i pole1 = new Vector3i(0,0,0);
+		Vector3i pole2 = new Vector3i(0,0,0);
+		//si pas plus d'un poteau référencer, alors on ne fait rien
+		if (pole.size() > 1)
 		{
 			World world;
 			//et enfin ici on boucle
 			//a noter ici l'important etant le <= au lieu de <
-			for (int nr_pilier = 0; nr_pilier <= pillar.size(); nr_pilier++)
+			for (int nr_pole = 0; nr_pole <= pole.size(); nr_pole++)
 			{
 				//si la boucle egal i alors on est en dehors du tableau (vu que c'est une arraylist, 5 valeurs egal 0,1,2,3,4) est on récupere la premiere valeur
 				//c'est ce comportement qui permet de 'fermer la boucle'
 				//sinon on recupere la valeur courante
-				if (nr_pilier == pillar.size())
+				if (nr_pole == pole.size())
 				{
 					world = Sponge.getServer().getWorld(World.get(0)).get();
 				}
 				else
 				{
-					world = Sponge.getServer().getWorld(World.get(nr_pilier)).get();
+					world = Sponge.getServer().getWorld(World.get(nr_pole)).get();
 				}
 				//pilier pret a traiter +1
-				pilier_ready++;
+				pole_ready++;
 				//et on switch
-				switch(pilier_ready)
+				switch(pole_ready)
 				{
 					case 1:
 						//on recupere le vecteur courant dans la liste de vecteur
 						//a noter que cette 'case' n'est atteinte qu'un fois
-						pilier1 = pillar.get(nr_pilier);
+						pole1 = pole.get(nr_pole);
 						break;
 					case 2:
 						//si la boucle egal i alors on est en dehors du tableau (vu que c'est une arraylist, 5 valeurs egal 0,1,2,3,4) est on récupere la premiere valeur
 						//c'est ce comportement qui permet de 'fermer la boucle'
 						//sinon on recupere la valeur courante
-						if (nr_pilier == pillar.size())
+						if (nr_pole == pole.size())
 						{
-							pilier2 = pillar.get(0);
+							pole2 = pole.get(0);
 						}
 						else
 						{
-							pilier2 = pillar.get(nr_pilier);
+							pole2 = pole.get(nr_pole);
 						}
 						break;
 				}
 
 				//si on a au moins 2 piliers a relier, alors on ajoute les effets
 				// ne renvoie faux qu'a la premiere passe
-				if (pilier_ready == 2)
+				if (pole_ready == 2)
 				{
 					//boucle pour ajouter les effets
 					//important ici on doit convertir les integer des vecteurs en double sinon on peut pas avoir 1,1 1,2 ... on a juste 1 2 ...
-					for (final Vector3d b : raytrace(new Vector3d(pilier1.getX()+0.5, pilier1.getY()+0.5, pilier1.getZ()+0.5), new Vector3d(pilier2.getX()+0.5, pilier2.getY()+0.5, pilier2.getZ()+0.5)))
+					for (final Vector3d b : raytrace(new Vector3d(pole1.getX()+0.5, pole1.getY()+0.5, pole1.getZ()+0.5), new Vector3d(pole2.getX()+0.5, pole2.getY()+0.5, pole2.getZ()+0.5)))
 					{
 						//on ajoute l'effet sur toute les lignes
 						for (int loop = 1; loop <= Size; loop++)
@@ -201,8 +201,8 @@ public class fenceTask
 					//on deplace le vecteur du pilier2 dans pilier1
 					//et le numero du pilier pret a etre rempli avec une nouvelle valeur est mit a 1
 					//pour toujours remplir le pilier2 et eviter pilier1
-					pilier1 = pilier2;
-					pilier_ready = 1;
+					pole1 = pole2;
+					pole_ready = 1;
 				}
 			}
 		}
@@ -218,7 +218,7 @@ public class fenceTask
 	private static List<Vector3d> raytrace(Vector3d un, Vector3d deux)
 	{
 		//d'abord on cree une liste qui contiendra nos vecteurs. c'est elle que l'on renvoie
-		final List<Vector3d> liste = new ArrayList<Vector3d>();
+		final List<Vector3d> list = new ArrayList<Vector3d>();
 		//ici on obtient un vecteur qui contient les distance entre nos 2 vecteurs fournit
 		//si vecteur 1 (x) egal 10 et vecteur 2 (x) egal 16 le resultat egal -6
 		final Vector3d vecteur = new Vector3d (un.getX() - deux.getX(), un.getY() - deux.getY(), un.getZ() - deux.getZ());
@@ -264,9 +264,9 @@ public class fenceTask
 			//on prend le vecteur du premier pilier
 			//on lui supprime la distance fournit par les vecteurs avant la boucle multiplier par la position actuel (-277 - (1x0.5) par exemple)
 			//et on obtient avec ca nos vecteurs intermediaire ou vont se trouver les effets
-			liste.add(new Vector3d(un.getX()-(x*effet), un.getY()-(y*effet), un.getZ()-(z*effet)));
+			list.add(new Vector3d(un.getX()-(x*effet), un.getY()-(y*effet), un.getZ()-(z*effet)));
 		}
 		//et enfin, on retourne la liste des vecteurs (position) de nos effets
-		return liste;
+		return list;
 	}
 }

@@ -1,5 +1,7 @@
 package com.ricky30.fence.utils;
 
+import java.util.List;
+
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
@@ -94,5 +96,19 @@ public class vector
 		}
 
 		return false;
+	}
+
+	public static boolean IsPositionzero(List<Double> Positions)
+	{
+		boolean Ok = false;
+		for (int loop = 0; loop < Positions.size(); loop++)
+		{
+			//need to make it bigger (-1.0 - 1.0) not high enough for special case
+			if (Positions.get(loop)>= -2.5 && Positions.get(loop) <= 2.5)
+			{
+				Ok = true;
+			}
+		}
+		return Ok;
 	}
 }

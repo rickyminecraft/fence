@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -92,7 +91,7 @@ public class moveEvent
 			SetWorld.clear();
 		}
 	}
-	
+
 	@Listener
 	public void onEntityMovement(DisplaceEntityEvent.Move.TargetLiving Event)
 	{
@@ -164,15 +163,17 @@ public class moveEvent
 	}
 
 	//to make better with y take in count
-	private boolean isBetween(List<Vector3i> pole, List<UUID> World, Vector3d player, World playerWorld)
+	private boolean isBetween(List<Vector3i> pole, List<UUID> World, Vector3d Entity, World playerWorld)
 	{
+		final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();
 		boolean ishurt = false;
-		if (playerWorld.getName().equals(Sponge.getServer().getWorld(World.get(0)).get().getName()))
+		if (playerWorld.getUniqueId().equals(World.get(0)))
 		{
 			Vector3i pole1 = new Vector3i(0,0,0);
 			Vector3i pole2 = new Vector3i(0,0,0);
 			int pillier = 0;
 			boolean End = false;
+			final List<Double> Position_test = new ArrayList<Double>();
 			while (!End)
 			{
 				pole1 = pole.get(pillier);
@@ -186,13 +187,16 @@ public class moveEvent
 				{
 					pole2 = pole.get(pillier);
 				}
-				final Vector3d vecteur_pilier = new Vector3d (pole1.getX() - pole2.getX(), pole1.getY() - pole2.getY(), pole1.getZ() - pole2.getZ());
-				final Vector3d vecteur_joueur = new Vector3d (pole1.getX() - player.getX(), pole1.getY() - (player.getY()-1), pole1.getZ() - player.getZ());
-				final double d3 = vecteur_joueur.getZ() * vecteur_pilier.getX();
-				final double d4 = vecteur_joueur.getX() * vecteur_pilier.getZ();
-				final Double d5 = d3-d4;
+				//necessaire ajouter 0.5 pour le centre du bloc
+				final double Position = ((pole1.getX()+0.5) - (pole2.getX()+0.5)) * (Entity.getZ() - (pole2.getZ()+0.5)) - ((pole1.getZ()+0.5) - (pole2.getZ()+0.5)) * (Entity.getX() - (pole2.getX()+0.5));
+				//player y = 64 -> pole y = 63
+				for (int loop = 0; loop < Pole.size(); loop++)
+				{
+					final double Position2 = ((pole1.getY()+loop+1) - (pole2.getY()+loop+1)) * (Entity.getZ() - (pole2.getZ()+0.5)) - ((pole1.getZ()+0.5) - (pole2.getZ()+0.5)) * (Entity.getY()+loop - (pole2.getY()+loop+1));
+					Position_test.add(loop, Position2);
+				}
 
-				if (d5 >= -4.0 && d5 <= 2.0 && vector.IsInside(player, pole1, pole2.add(0, 2.0, 0)))
+				if (Position >= -0.7 && Position <= 0.7 && vector.IsPositionzero(Position_test) && vector.IsInside(Entity, pole1, pole2.add(0, Pole.size(), 0)))
 				{
 					ishurt = true;
 				}
