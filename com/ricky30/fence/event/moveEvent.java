@@ -162,7 +162,6 @@ public class moveEvent
 		}
 	}
 
-	//to make better with y take in count
 	private boolean isBetween(List<Vector3i> pole, List<UUID> World, Vector3d Entity, World playerWorld)
 	{
 		final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();

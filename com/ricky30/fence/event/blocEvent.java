@@ -34,6 +34,10 @@ public class blocEvent
 	public void oninteractblockPlace(ChangeBlockEvent.Place Event, @First Player player)
 	{
 		this.config = fence.plugin.getConfig();
+		if (config.getNode("pole").isVirtual())
+		{
+			return;
+		}
 		for (final Transaction<BlockSnapshot> blocksnap : Event.getTransactions())
 		{
 			Vector3i Pos = blocksnap.getDefault().getLocation().get().getBlockPosition();
@@ -112,6 +116,10 @@ public class blocEvent
 	public void oninteractblockRemove(ChangeBlockEvent.Break Event, @First Player player)
 	{
 		this.config = fence.plugin.getConfig();
+		if (config.getNode("pole").isVirtual())
+		{
+			return;
+		}
 		for (final Transaction<BlockSnapshot> blocksnap : Event.getTransactions())
 		{
 			Vector3i Pos = blocksnap.getDefault().getLocation().get().getBlockPosition();
