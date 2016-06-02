@@ -7,8 +7,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
@@ -75,15 +78,29 @@ public class moveEvent
 					SetWorld.add(uid.get(loop));
 				}
 			}
-			//on ajoute les effets
+			//on test si on est entre deux poteau
 			if (isBetween(SetPosition, SetWorld, player.getLocation().getPosition(), player.getWorld()))
 			{
-				if (config.getNode("KillPlayer").getBoolean())
+				//if true and player is not in creative or spectator
+				if (player.gameMode().get() != GameModes.CREATIVE && player.gameMode().get() != GameModes.SPECTATOR)
 				{
-					final HealthData health = player.getHealthData();
-					final Double level = health.health().get()-0.1;
-					health.health().set(level);
-					player.offer(health.health().set(level));
+					if (config.getNode("Dodamage").getBoolean())
+					{
+						if (config.getNode("KillPlayer").getBoolean())
+						{
+							final HealthData health = player.getHealthData();
+							final Double level = 0.0;
+							health.health().set(level);
+							player.offer(health.health().set(level));
+						}
+						else
+						{
+							final HealthData health = player.getHealthData();
+							final Double level = health.health().get()-0.5;
+							health.health().set(level);
+							player.offer(health.health().set(level));
+						}
+					}
 				}
 			}
 			//ne pas oublier d'effacer les listes avant de les remplir a nouveau
@@ -142,17 +159,51 @@ public class moveEvent
 					SetWorld.add(uid.get(loop));
 				}
 			}
+			Entity entity = Event.getTargetEntity().getBaseVehicle();
 			if (!Event.getTargetEntity().getType().equals(EntityTypes.PLAYER))
 			{
-				//on ajoute les effets
+				//on test si on est entre deux poteau
 				if (isBetween(SetPosition, SetWorld, Event.getTargetEntity().getLocation().getPosition(), Event.getTargetEntity().getWorld()))
 				{
-					if (config.getNode("KillMonster").getBoolean())
+					if (entity instanceof Animal)
 					{
-						final HealthData health = Event.getTargetEntity().getHealthData();
-						final Double level = 0.0;
-						health.health().set(level);
-						Event.getTargetEntity().offer(health.health().set(level));
+						if (config.getNode("Dodamage").getBoolean())
+						{
+							if (config.getNode("KillPeacefull").getBoolean())
+							{
+								final HealthData health = Event.getTargetEntity().getHealthData();
+								final Double level = 0.0;
+								health.health().set(level);
+								Event.getTargetEntity().offer(health.health().set(level));
+							}
+//							else
+//							{
+//								final HealthData health = Event.getTargetEntity().getHealthData();
+//								final Double level = health.health().get()-0.5;
+//								health.health().set(level);
+//								Event.getTargetEntity().offer(health.health().set(level));
+//							}
+						}
+					}
+					else
+					{
+						if (config.getNode("Dodamage").getBoolean())
+						{
+							if (config.getNode("KillMonster").getBoolean())
+							{
+								final HealthData health = Event.getTargetEntity().getHealthData();
+								final Double level = 0.0;
+								health.health().set(level);
+								Event.getTargetEntity().offer(health.health().set(level));
+							}
+							else
+							{
+								final HealthData health = Event.getTargetEntity().getHealthData();
+								final Double level = health.health().get()-0.5;
+								health.health().set(level);
+								Event.getTargetEntity().offer(health.health().set(level));
+							}
+						}
 					}
 				}
 			}

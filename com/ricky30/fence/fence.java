@@ -34,7 +34,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.fence", name = "fence", version = "1.0.1")
+@Plugin(id = "com.ricky30.fence", name = "fence", version = "1.0.2")
 public class fence
 {
 	@Inject
@@ -154,6 +154,8 @@ public class fence
 		this.config.getNode("ConfigVersion").setValue(1);
 		this.config.getNode("KillPlayer").setValue(false);
 		this.config.getNode("KillMonster").setValue(false);
+		this.config.getNode("KillPeacefull").setValue(false);
+		this.config.getNode("Dodamage").setValue(false);
 		save();
 	}
 
