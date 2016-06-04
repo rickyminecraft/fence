@@ -22,7 +22,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.ricky30.fence.fence;
 import com.ricky30.fence.utils.manageSet;
-import com.ricky30.fence.utils.poleSet;
+import com.ricky30.fence.utils.managePole;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -43,44 +43,12 @@ public class blocEvent
 			Vector3i Pos = blocksnap.getDefault().getLocation().get().getBlockPosition();
 			final World world = player.getWorld();
 			final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();
-			int Position = 0;
-			Pos = Pos.add(0, Pole.size(), 0);
 			boolean Ok = false;
-			//if we get AIR then go below
-			while (!Ok)
-			{
-				if (world.getBlock(Pos).getType().equals(BlockTypes.AIR))
-				{
-					Pos = Pos.add(0, -1, 0);
-					Position +=1;
-				}
-				else
-				{
-					Ok = true;
-				}
-				if (Position > Pole.size())
-				{
-					Ok = true;
-				}
-			}
-			Position = 0;
+			Pos = Pos.add(0, Pole.size(), 0);
+			Pos = CheckPole(Pos, world, Pole.size());
 			Pos = Pos.sub(0, Pole.size()-1, 0);
-			while (Position < Pole.size())
-			{
-				final ConfigurateTranslator tr = ConfigurateTranslator.instance();
-				final ConfigurationNode node = Pole.get(String.valueOf(Position));
-				final DataContainer cont = tr.translateFrom(node);
-				//a cause d'une erreur eclipse, obliger de faire ça
-				final Builder builder = Sponge.getRegistry().createBuilder(Builder.class);
-				final BlockState block_Conf = builder.build(cont).get();
-				final BlockState block_World = world.getBlock(Pos);
-				Pos = Pos.add(0, 1, 0);
-				Position++;
-				if (!block_Conf.equals(block_World))
-				{
-					Ok = false;
-				}
-			}
+			Ok = CheckPole2(Pos, world, Pole, Pole.size());
+
 			if (Ok)
 			{
 				int PoleNumber = 0;
@@ -97,7 +65,6 @@ public class blocEvent
 					}
 					PoleNumber++;
 				}
-				Pos = Pos.sub(0,Pole.size(),0);
 				final String Number = String.valueOf(Pos.getX()) + String.valueOf(Pos.getY()) + String.valueOf(Pos.getZ());
 				final byte[] b = Number.getBytes();
 				final String Name = UUID.nameUUIDFromBytes(b).toString();
@@ -125,27 +92,9 @@ public class blocEvent
 			Vector3i Pos = blocksnap.getDefault().getLocation().get().getBlockPosition();
 			final World world = player.getWorld();
 			final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();
-			int Position = 0;
 			Pos = Pos.add(0, Pole.size(), 0);
-			boolean Ok = false;
-			//if we get AIR then go below
-			while (!Ok)
-			{
-				if (world.getBlock(Pos).getType().equals(BlockTypes.AIR))
-				{
-					Pos = Pos.add(0, -1, 0);
-					Position +=1;
-				}
-				else
-				{
-					Ok = true;
-				}
-				if (Position > Pole.size())
-				{
-					Ok = true;
-				}
-			}
-			Pos = Pos.add(0, -1, 0);
+			Pos = CheckPole(Pos, world, Pole.size());
+			Pos = Pos.sub(0, 1, 0);
 			final String Number = String.valueOf(Pos.getX()) + String.valueOf(Pos.getY()) + String.valueOf(Pos.getZ());
 			final byte[] b = Number.getBytes();
 			final String Name = UUID.nameUUIDFromBytes(b).toString();
@@ -174,48 +123,14 @@ public class blocEvent
 			Vector3i Pos = Event.getTargetBlock().getPosition();
 			final World world = player.getWorld();
 			final Map<Object, ? extends ConfigurationNode> Pole = config.getNode("pole").getChildrenMap();
-			int Position = 0;
-			Pos = Pos.add(0, Pole.size(), 0);
 			boolean Ok = false;
-			//if we get AIR then go below
-			while (!Ok)
-			{
-				if (world.getBlock(Pos).getType().equals(BlockTypes.AIR))
-				{
-					Pos = Pos.add(0, -1, 0);
-					Position +=1;
-				}
-				else
-				{
-					Ok = true;
-				}
-				if (Position > Pole.size())
-				{
-					Ok = true;
-				}
-			}
-			Position = 0;
+			Pos = Pos.add(0, Pole.size(), 0);
+			Pos = CheckPole(Pos, world, Pole.size());
 			Pos = Pos.sub(0, Pole.size()-1, 0);
-			while (Position < Pole.size())
-			{
-				final ConfigurateTranslator tr = ConfigurateTranslator.instance();
-				final ConfigurationNode node = Pole.get(String.valueOf(Position));
-				final DataContainer cont = tr.translateFrom(node);
-				//a cause d'une erreur eclipse, obliger de faire ça
-				final Builder builder = Sponge.getRegistry().createBuilder(Builder.class);
-				final BlockState block_Conf = builder.build(cont).get();
-				final BlockState block_World = world.getBlock(Pos);
-				Pos = Pos.add(0, 1, 0);
-				Position++;
-				if (!block_Conf.equals(block_World))
-				{
-					Ok = false;
-				}
-			}
+			Ok = CheckPole2(Pos, world, Pole, Pole.size());
 
 			if (Ok)
 			{
-				Pos = Pos.sub(0,Pole.size(),0);
 				final String Number = String.valueOf(Pos.getX()) + String.valueOf(Pos.getY()) + String.valueOf(Pos.getZ());
 				final byte[] b = Number.getBytes();
 				final String Name = UUID.nameUUIDFromBytes(b).toString();
@@ -261,13 +176,13 @@ public class blocEvent
 					this.config.getNode("fence", "pole", set, Name, "world").setValue(Worlduid.toString());
 					this.config.getNode("fence", "pole", set, Name, "Number").setValue(PoleNumber);
 					fence.plugin.save();
-					player.sendMessage(Text.of("Pole set ",manageSet.loadSetnumber()));
+					player.sendMessage(Text.of("Pole added to pole set number ",manageSet.loadSetnumber()));
 				}
 			}
 		}
-		if (poleSet.IsSetactive())
+		if (managePole.IsSetactive())
 		{
-			poleSet.SetActive(false);
+			managePole.SetActive(false);
 			//faire une boucle jusqu'en haut
 			Vector3i pos = Event.getTargetBlock().getPosition();
 			final World world = player.getWorld();
@@ -285,7 +200,66 @@ public class blocEvent
 				pos = pos.add(0, 1, 0);
 			}
 			fence.plugin.save();
-			player.sendMessage(Text.of("Pole type defined"));
+			player.sendMessage(Text.of("Pole style defined"));
 		}
+	}
+
+	//////
+	// start from above a pole and go down one by one to check size and return the lowest position (min: height - pole size)
+	// args: position vector, the world, pole size
+	// return: new position
+	//
+	//////
+	private Vector3i CheckPole(Vector3i Pos, World world, int Size)
+	{
+		int Position = 0;
+		boolean Ok = false;
+		//if we get AIR then go below
+		while (!Ok)
+		{
+			if (world.getBlock(Pos).getType().equals(BlockTypes.AIR))
+			{
+				Pos = Pos.add(0, -1, 0);
+				Position +=1;
+			}
+			else
+			{
+				Ok = true;
+			}
+			if (Position > Size)
+			{
+				Ok = true;
+			}
+		}
+		return Pos;
+	}
+
+	//////
+	//
+	// check if the blocks (starting from the current position) are equal to the defined pole style
+	// args: position vector, the world, the map of poles nodes, pole size
+	// return: if this is equal : true else false
+	//
+	//////
+	private boolean CheckPole2(Vector3i Pos, World world, Map<Object, ? extends ConfigurationNode> Pole, int Size)
+	{
+		int Position = 0;
+		boolean Ok = true;
+		while (Position < Size)
+		{
+			final ConfigurateTranslator tr = ConfigurateTranslator.instance();
+			final ConfigurationNode node = Pole.get(String.valueOf(Position));
+			final DataContainer cont = tr.translateFrom(node);
+			final Builder builder = Sponge.getRegistry().createBuilder(Builder.class);
+			final BlockState block_Conf = builder.build(cont).get();
+			final BlockState block_World = world.getBlock(Pos);
+			Pos = Pos.add(0, 1, 0);
+			Position++;
+			if (!block_Conf.equals(block_World))
+			{
+				Ok = false;
+			}
+		}
+		return Ok;
 	}
 }

@@ -22,19 +22,15 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
 import com.google.inject.Inject;
-import com.ricky30.fence.command.commandFence;
-import com.ricky30.fence.command.commandPole;
-import com.ricky30.fence.command.commandReload;
-import com.ricky30.fence.command.commandSet;
-import com.ricky30.fence.event.blocEvent;
-import com.ricky30.fence.event.moveEvent;
+import com.ricky30.fence.command.*;
+import com.ricky30.fence.event.*;
 import com.ricky30.fence.task.fenceTask;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.fence", name = "fence", version = "1.0.2")
+@Plugin(id = "com.ricky30.fence", name = "fence", version = "1.0.3")
 public class fence
 {
 	@Inject
@@ -104,6 +100,7 @@ public class fence
 			getLogger().error("Couldn't create default configuration file!");
 		}
 
+		setupconfig();
 		task = plugin.getTaskbuilder().execute(new Runnable()
 		{
 			public void run()
@@ -151,11 +148,26 @@ public class fence
 
 	private void setupconfig()
 	{
-		this.config.getNode("ConfigVersion").setValue(1);
-		this.config.getNode("KillPlayer").setValue(false);
-		this.config.getNode("KillMonster").setValue(false);
-		this.config.getNode("KillPeacefull").setValue(false);
-		this.config.getNode("Dodamage").setValue(false);
+		if (config.getNode("ConfigVersion").getValue().equals(1))
+		{
+			this.config.getNode("ConfigVersion").setValue(2);
+		}
+		if (config.getNode("KillPlayer").isVirtual())
+		{
+			this.config.getNode("KillPlayer").setValue(false);
+		}
+		if (config.getNode("KillMonster").isVirtual())
+		{
+			this.config.getNode("KillMonster").setValue(false);
+		}
+		if (config.getNode("KillPeacefull").isVirtual())
+		{
+			this.config.getNode("KillPeacefull").setValue(false);
+		}
+		if (config.getNode("Dodamage").isVirtual())
+		{
+			this.config.getNode("Dodamage").setValue(false);
+		}
 		save();
 	}
 

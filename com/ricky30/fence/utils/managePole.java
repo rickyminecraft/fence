@@ -1,6 +1,6 @@
 package com.ricky30.fence.utils;
 
-public class poleSet
+public class managePole
 {
 	private static boolean isSet;
 
@@ -13,4 +13,5 @@ public class poleSet
 	{
 		isSet = Active;
 	}
+
 }

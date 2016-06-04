@@ -7,7 +7,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 
-import com.ricky30.fence.utils.poleSet;
+import com.ricky30.fence.utils.managePole;
 
 public class commandPole implements CommandExecutor
 {
@@ -15,7 +15,7 @@ public class commandPole implements CommandExecutor
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
-		poleSet.SetActive(true);
+		managePole.SetActive(true);
 		src.sendMessage(Text.of("hit the root of your pole with right click"));
 		return CommandResult.success();
 	}

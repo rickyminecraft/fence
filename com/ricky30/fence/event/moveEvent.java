@@ -159,7 +159,7 @@ public class moveEvent
 					SetWorld.add(uid.get(loop));
 				}
 			}
-			Entity entity = Event.getTargetEntity().getBaseVehicle();
+			final Entity entity = Event.getTargetEntity().getBaseVehicle();
 			if (!Event.getTargetEntity().getType().equals(EntityTypes.PLAYER))
 			{
 				//on test si on est entre deux poteau
@@ -176,13 +176,6 @@ public class moveEvent
 								health.health().set(level);
 								Event.getTargetEntity().offer(health.health().set(level));
 							}
-//							else
-//							{
-//								final HealthData health = Event.getTargetEntity().getHealthData();
-//								final Double level = health.health().get()-0.5;
-//								health.health().set(level);
-//								Event.getTargetEntity().offer(health.health().set(level));
-//							}
 						}
 					}
 					else
@@ -219,8 +212,8 @@ public class moveEvent
 		boolean ishurt = false;
 		if (playerWorld.getUniqueId().equals(World.get(0)))
 		{
-			Vector3i pole1 = new Vector3i(0,0,0);
-			Vector3i pole2 = new Vector3i(0,0,0);
+			Vector3i pole1 = null;
+			Vector3i pole2 = null;
 			int pillier = 0;
 			boolean End = false;
 			final List<Double> Position_test = new ArrayList<Double>();

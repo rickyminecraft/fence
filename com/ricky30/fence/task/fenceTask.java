@@ -34,22 +34,26 @@ public class fenceTask
 		//ajoute les différentes valeurs dans leurs map respectives
 		for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
 		{
-			for (final Object Name: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
+			//set0 is a stock set where every new pole is added before getting a new set number
+			if (!Sets.toString().equals("Set0"))
 			{
-				int taille = position.size();
-				int x, y, z, number;
-				World world;
-				x = config.getNode("fence", "pole", Sets.toString(), Name, "X").getInt();
-				y = config.getNode("fence", "pole", Sets.toString(), Name, "Y").getInt();
-				z = config.getNode("fence", "pole", Sets.toString(), Name, "Z").getInt();
-				number = config.getNode("fence", "pole", Sets.toString(), Name, "Number").getInt();
-				world = Sponge.getServer().getWorld(UUID.fromString(config.getNode("fence", "pole", Sets.toString(), Name, "world").getString())).get();
-				final Vector3i vecteur = new Vector3i(x, y, z);
-				taille++;
-				Number.put(taille, number);
-				position.put(taille, vecteur);
-				uid.put(taille, world.getUniqueId());
-				Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
+				for (final Object Name: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
+				{
+					int taille = position.size();
+					int x, y, z, number;
+					World world;
+					x = config.getNode("fence", "pole", Sets.toString(), Name, "X").getInt();
+					y = config.getNode("fence", "pole", Sets.toString(), Name, "Y").getInt();
+					z = config.getNode("fence", "pole", Sets.toString(), Name, "Z").getInt();
+					number = config.getNode("fence", "pole", Sets.toString(), Name, "Number").getInt();
+					world = Sponge.getServer().getWorld(UUID.fromString(config.getNode("fence", "pole", Sets.toString(), Name, "world").getString())).get();
+					final Vector3i vecteur = new Vector3i(x, y, z);
+					taille++;
+					Number.put(taille, number);
+					position.put(taille, vecteur);
+					uid.put(taille, world.getUniqueId());
+					Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
+				}
 			}
 		}
 		//permet de savoir combien de zones differentes sont défini
