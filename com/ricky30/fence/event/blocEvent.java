@@ -28,12 +28,11 @@ import ninja.leaping.configurate.ConfigurationNode;
 
 public class blocEvent
 {
-	private ConfigurationNode config = null;
 
 	@Listener
 	public void oninteractblockPlace(ChangeBlockEvent.Place Event, @First Player player)
 	{
-		this.config = fence.plugin.getConfig();
+		final ConfigurationNode config = fence.plugin.getConfig();
 		if (config.getNode("pole").isVirtual())
 		{
 			return;
@@ -57,7 +56,7 @@ public class blocEvent
 					for (final Object pole : config.getNode("fence", "pole", "Set0").getChildrenMap().keySet())
 					{
 						int PoleNumbertmp;
-						PoleNumbertmp = this.config.getNode("fence", "pole", "Set0", pole.toString(), "Number").getInt();
+						PoleNumbertmp = config.getNode("fence", "pole", "Set0", pole.toString(), "Number").getInt();
 						if (PoleNumbertmp > PoleNumber)
 						{
 							PoleNumber = PoleNumbertmp;
@@ -68,11 +67,11 @@ public class blocEvent
 				final String Number = String.valueOf(Pos.getX()) + String.valueOf(Pos.getY()) + String.valueOf(Pos.getZ());
 				final byte[] b = Number.getBytes();
 				final String Name = UUID.nameUUIDFromBytes(b).toString();
-				this.config.getNode("fence", "pole", "Set0", Name, "X").setValue(Pos.getX());
-				this.config.getNode("fence", "pole", "Set0", Name, "Y").setValue(Pos.getY());
-				this.config.getNode("fence", "pole", "Set0", Name, "Z").setValue(Pos.getZ());
-				this.config.getNode("fence", "pole", "Set0", Name, "world").setValue(world.getUniqueId().toString());
-				this.config.getNode("fence", "pole", "Set0", Name, "Number").setValue(PoleNumber);
+				config.getNode("fence", "pole", "Set0", Name, "X").setValue(Pos.getX());
+				config.getNode("fence", "pole", "Set0", Name, "Y").setValue(Pos.getY());
+				config.getNode("fence", "pole", "Set0", Name, "Z").setValue(Pos.getZ());
+				config.getNode("fence", "pole", "Set0", Name, "world").setValue(world.getUniqueId().toString());
+				config.getNode("fence", "pole", "Set0", Name, "Number").setValue(PoleNumber);
 				fence.plugin.save();
 				player.sendMessage(Text.of("A pole has been made"));
 			}
@@ -82,7 +81,7 @@ public class blocEvent
 	@Listener
 	public void oninteractblockRemove(ChangeBlockEvent.Break Event, @First Player player)
 	{
-		this.config = fence.plugin.getConfig();
+		final ConfigurationNode config = fence.plugin.getConfig();
 		if (config.getNode("pole").isVirtual())
 		{
 			return;
@@ -98,13 +97,13 @@ public class blocEvent
 			final String Number = String.valueOf(Pos.getX()) + String.valueOf(Pos.getY()) + String.valueOf(Pos.getZ());
 			final byte[] b = Number.getBytes();
 			final String Name = UUID.nameUUIDFromBytes(b).toString();
-			for (final Object node : this.config.getNode("fence", "pole").getChildrenMap().keySet())
+			for (final Object node : config.getNode("fence", "pole").getChildrenMap().keySet())
 			{
-				if (this.config.getNode("fence", "pole", node.toString()).getChildrenMap().containsKey(Name))
+				if (config.getNode("fence", "pole", node.toString()).getChildrenMap().containsKey(Name))
 				{
-					if (world.getUniqueId().equals(UUID.fromString(this.config.getNode("fence", "pole", node.toString(), Name, "world").getString())))
+					if (world.getUniqueId().equals(UUID.fromString(config.getNode("fence", "pole", node.toString(), Name, "world").getString())))
 					{
-						this.config.getNode("fence", "pole", node.toString()).removeChild(Name);
+						config.getNode("fence", "pole", node.toString()).removeChild(Name);
 						fence.plugin.save();
 						player.sendMessage(Text.of("A pole has been broken"));
 					}
@@ -116,7 +115,7 @@ public class blocEvent
 	@Listener
 	public void oninteractblockPrimary(InteractBlockEvent.Secondary Event, @First Player player)
 	{
-		this.config = fence.plugin.getConfig();
+		final ConfigurationNode config = fence.plugin.getConfig();
 		if (manageSet.IsSetactive())
 		{
 			manageSet.SetActive(false);
@@ -137,9 +136,9 @@ public class blocEvent
 				int x = 0, y = 0, z = 0;
 				UUID Worlduid = null;
 				boolean Done = false;
-				for (final Object node : this.config.getNode("fence", "pole").getChildrenMap().keySet())
+				for (final Object node : config.getNode("fence", "pole").getChildrenMap().keySet())
 				{
-					if (this.config.getNode("fence", "pole", node.toString()).getChildrenMap().containsKey(Name))
+					if (config.getNode("fence", "pole", node.toString()).getChildrenMap().containsKey(Name))
 					{
 						x = config.getNode("fence", "pole", node.toString(), Name, "X").getInt();
 						y = config.getNode("fence", "pole", node.toString(), Name, "Y").getInt();
@@ -148,7 +147,7 @@ public class blocEvent
 						if (world.getUniqueId().equals(Worlduid))
 						{
 							Done = true;
-							this.config.getNode("fence", "pole", node.toString()).removeChild(Name);
+							config.getNode("fence", "pole", node.toString()).removeChild(Name);
 						}
 
 					}
@@ -162,7 +161,7 @@ public class blocEvent
 						for (final Object pole : config.getNode("fence", "pole", set).getChildrenMap().keySet())
 						{
 							int PoleNumbertmp;
-							PoleNumbertmp = this.config.getNode("fence", "pole", set, pole.toString(), "Number").getInt();
+							PoleNumbertmp = config.getNode("fence", "pole", set, pole.toString(), "Number").getInt();
 							if (PoleNumbertmp > PoleNumber)
 							{
 								PoleNumber = PoleNumbertmp;
@@ -170,11 +169,11 @@ public class blocEvent
 						}
 						PoleNumber++;
 					}
-					this.config.getNode("fence", "pole", set, Name, "X").setValue(x);
-					this.config.getNode("fence", "pole", set, Name, "Y").setValue(y);
-					this.config.getNode("fence", "pole", set, Name, "Z").setValue(z);
-					this.config.getNode("fence", "pole", set, Name, "world").setValue(Worlduid.toString());
-					this.config.getNode("fence", "pole", set, Name, "Number").setValue(PoleNumber);
+					config.getNode("fence", "pole", set, Name, "X").setValue(x);
+					config.getNode("fence", "pole", set, Name, "Y").setValue(y);
+					config.getNode("fence", "pole", set, Name, "Z").setValue(z);
+					config.getNode("fence", "pole", set, Name, "world").setValue(Worlduid.toString());
+					config.getNode("fence", "pole", set, Name, "Number").setValue(PoleNumber);
 					fence.plugin.save();
 					player.sendMessage(Text.of("Pole added to pole set number ",manageSet.loadSetnumber()));
 				}
@@ -187,15 +186,15 @@ public class blocEvent
 			Vector3i pos = Event.getTargetBlock().getPosition();
 			final World world = player.getWorld();
 			int position = 0;
-			final Map<Object, ? extends ConfigurationNode> cn = this.config.getNode("pole").getChildrenMap();
+			final Map<Object, ? extends ConfigurationNode> cn = config.getNode("pole").getChildrenMap();
 			for (final Object node :cn.keySet())
 			{
-				this.config.getNode("pole").removeChild(node);
+				config.getNode("pole").removeChild(node);
 			}
 			while (!world.getBlock(pos).getType().equals(BlockTypes.AIR))
 			{
 				final BlockState block = world.getBlock(pos);
-				this.config.getNode("pole", String.valueOf(position), "BlockState").setValue(block.toString());
+				config.getNode("pole", String.valueOf(position), "BlockState").setValue(block.toString());
 				position++;
 				pos = pos.add(0, 1, 0);
 			}

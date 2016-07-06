@@ -62,7 +62,7 @@ public class fence
 
 	public ConfigurationNode getConfig()
 	{
-		return this.config;
+		return config;
 	}
 
 	public Path getDefaultConfig() 
@@ -148,25 +148,29 @@ public class fence
 
 	private void setupconfig()
 	{
-		if (config.getNode("ConfigVersion").getValue().equals(1))
+		if (config.getNode("ConfigVersion").isVirtual())
 		{
-			this.config.getNode("ConfigVersion").setValue(2);
+			config.getNode("ConfigVersion").setValue(2);
+		}
+		else if (config.getNode("ConfigVersion").getValue().equals(1))
+		{
+			config.getNode("ConfigVersion").setValue(2);
 		}
 		if (config.getNode("KillPlayer").isVirtual())
 		{
-			this.config.getNode("KillPlayer").setValue(false);
+			config.getNode("KillPlayer").setValue(false);
 		}
 		if (config.getNode("KillMonster").isVirtual())
 		{
-			this.config.getNode("KillMonster").setValue(false);
+			config.getNode("KillMonster").setValue(false);
 		}
 		if (config.getNode("KillPeacefull").isVirtual())
 		{
-			this.config.getNode("KillPeacefull").setValue(false);
+			config.getNode("KillPeacefull").setValue(false);
 		}
 		if (config.getNode("Dodamage").isVirtual())
 		{
-			this.config.getNode("Dodamage").setValue(false);
+			config.getNode("Dodamage").setValue(false);
 		}
 		save();
 	}
@@ -175,7 +179,7 @@ public class fence
 	{
 		try
 		{
-			getConfigManager().save(this.config);
+			getConfigManager().save(config);
 		} catch (final IOException e) 
 		{
 			getLogger().error("Failed to save config file!", e);
@@ -186,7 +190,7 @@ public class fence
 	{
 		try
 		{
-			this.config = getConfigManager().load();
+			config = getConfigManager().load();
 		} catch (final IOException e)
 		{
 			getLogger().error("Failed to load config file!", e);

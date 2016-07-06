@@ -9,8 +9,10 @@ Build a pole with what you want then do the command fence pole and hit the root 
 
 next build a pole and when you build at last 2 poles they while be connected by particules like a fence
 
-if you go to your config file and enable killmonster, everything who is not a player while be killed if they try to walkthrough this fence
-if you enable killplayer, player will be hurt (maybe really killed later if people ask)
+if you go to your config file and enable killmonster, monsters while be killed if they try to walkthrough this fence
+if you enable killplayer, player will be killed.
+if you enable KillPeacefull animals will be killed
+if you disable Dodamage then monster or player will only get hurt a bit
 
 break a pole block to remove a pole
 

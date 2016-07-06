@@ -9,11 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.world.World;
 
@@ -29,180 +30,186 @@ public class moveEvent
 	private static ConfigurationNode config = null;
 
 	@Listener
-	public void onPlayerMovement(DisplaceEntityEvent.Move.TargetPlayer Event, @First Player player)
+	public void onPlayerMovement(MoveEntityEvent Event, @First Player player)
 	{
-		config = fence.plugin.getConfig();
-		final Map<Integer, Vector3i> position = new ConcurrentHashMap<Integer, Vector3i>();
-		final Map<Integer, UUID> uid = new ConcurrentHashMap<Integer, UUID>();
-		final Map<Integer, Integer> Set = new ConcurrentHashMap<Integer, Integer>();
-		final List<Integer> nr_Set = new ArrayList<Integer>();
-		for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
+		if (Event.getTargetEntity() instanceof Player)
 		{
-			for (final Object pole: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
+			config = fence.plugin.getConfig();
+			final Map<Integer, Vector3i> position = new ConcurrentHashMap<Integer, Vector3i>();
+			final Map<Integer, UUID> uid = new ConcurrentHashMap<Integer, UUID>();
+			final Map<Integer, Integer> Set = new ConcurrentHashMap<Integer, Integer>();
+			final List<Integer> nr_Set = new ArrayList<Integer>();
+			for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
 			{
-				int taille = position.size();
-				int x, y, z;
-				x = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "X").getInt();
-				y = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Y").getInt();
-				z = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Z").getInt();
-				final Vector3i vecteur = new Vector3i(x, y, z);
-				taille++;
-				position.put(taille, vecteur);
-				uid.put(taille, UUID.fromString(config.getNode("fence", "pole", Sets.toString(), pole.toString(), "world").getString()));
-				Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
-			}
-		}
-		//permet de savoir combien de zones differentes sont défini
-		for (final int Sets: Set.values())
-		{
-			if (nr_Set.isEmpty())
-			{
-				nr_Set.add(Sets);
-			}
-			if (!nr_Set.contains(Sets))
-			{
-				nr_Set.add(Sets);
-			}
-		}
-		//crée les listes de vecteurs que l'on va envoyer
-		final List<Vector3i> SetPosition = new ArrayList<Vector3i>();
-		final List<UUID> SetWorld = new ArrayList<UUID>();
-		for (final Object set_Number: nr_Set.toArray())
-		{
-			final int stnr = (Integer) set_Number;
-			for (final int loop : Set.keySet())
-			{
-				if (Set.get(loop).equals(stnr))
+				for (final Object pole: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
 				{
-					SetPosition.add(position.get(loop));
-					SetWorld.add(uid.get(loop));
+					int taille = position.size();
+					int x, y, z;
+					x = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "X").getInt();
+					y = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Y").getInt();
+					z = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Z").getInt();
+					final Vector3i vecteur = new Vector3i(x, y, z);
+					taille++;
+					position.put(taille, vecteur);
+					uid.put(taille, UUID.fromString(config.getNode("fence", "pole", Sets.toString(), pole.toString(), "world").getString()));
+					Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
 				}
 			}
-			//on test si on est entre deux poteau
-			if (isBetween(SetPosition, SetWorld, player.getLocation().getPosition(), player.getWorld()))
+			//permet de savoir combien de zones differentes sont défini
+			for (final int Sets: Set.values())
 			{
-				//if true and player is not in creative or spectator
-				if (player.gameMode().get() != GameModes.CREATIVE && player.gameMode().get() != GameModes.SPECTATOR)
+				if (nr_Set.isEmpty())
 				{
-					if (config.getNode("Dodamage").getBoolean())
+					nr_Set.add(Sets);
+				}
+				if (!nr_Set.contains(Sets))
+				{
+					nr_Set.add(Sets);
+				}
+			}
+			//crée les listes de vecteurs que l'on va envoyer
+			final List<Vector3i> SetPosition = new ArrayList<Vector3i>();
+			final List<UUID> SetWorld = new ArrayList<UUID>();
+			for (final Object set_Number: nr_Set.toArray())
+			{
+				final int stnr = (Integer) set_Number;
+				for (final int loop : Set.keySet())
+				{
+					if (Set.get(loop).equals(stnr))
 					{
-						if (config.getNode("KillPlayer").getBoolean())
+						SetPosition.add(position.get(loop));
+						SetWorld.add(uid.get(loop));
+					}
+				}
+				//on test si on est entre deux poteau
+				if (isBetween(SetPosition, SetWorld, player.getLocation().getPosition(), player.getWorld()))
+				{
+					//if true and player is not in creative or spectator
+					if (player.gameMode().get() != GameModes.CREATIVE && player.gameMode().get() != GameModes.SPECTATOR)
+					{
+						if (config.getNode("Dodamage").getBoolean())
 						{
-							final HealthData health = player.getHealthData();
-							final Double level = 0.0;
-							health.health().set(level);
-							player.offer(health.health().set(level));
-						}
-						else
-						{
-							final HealthData health = player.getHealthData();
-							final Double level = health.health().get()-0.5;
-							health.health().set(level);
-							player.offer(health.health().set(level));
+							if (config.getNode("KillPlayer").getBoolean())
+							{
+								final HealthData health = player.getHealthData();
+								final Double level = 0.0;
+								health.health().set(level);
+								player.offer(health.health().set(level));
+							}
+							else
+							{
+								final HealthData health = player.getHealthData();
+								final Double level = health.health().get()-0.5;
+								health.health().set(level);
+								player.offer(health.health().set(level));
+							}
 						}
 					}
 				}
+				//ne pas oublier d'effacer les listes avant de les remplir a nouveau
+				SetPosition.clear();
+				SetWorld.clear();
 			}
-			//ne pas oublier d'effacer les listes avant de les remplir a nouveau
-			SetPosition.clear();
-			SetWorld.clear();
 		}
 	}
 
 	@Listener
-	public void onEntityMovement(DisplaceEntityEvent.Move.TargetLiving Event)
+	public void onEntityMovement(MoveEntityEvent Event)
 	{
-		config = fence.plugin.getConfig();
-		final Map<Integer, Vector3i> position = new ConcurrentHashMap<Integer, Vector3i>();
-		final Map<Integer, UUID> uid = new ConcurrentHashMap<Integer, UUID>();
-		final Map<Integer, Integer> Set = new ConcurrentHashMap<Integer, Integer>();
-		final List<Integer> nr_Set = new ArrayList<Integer>();
-		for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
+		if (Event.getTargetEntity() instanceof Living)
 		{
-			for (final Object pole: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
+			config = fence.plugin.getConfig();
+			final Map<Integer, Vector3i> position = new ConcurrentHashMap<Integer, Vector3i>();
+			final Map<Integer, UUID> uid = new ConcurrentHashMap<Integer, UUID>();
+			final Map<Integer, Integer> Set = new ConcurrentHashMap<Integer, Integer>();
+			final List<Integer> nr_Set = new ArrayList<Integer>();
+			for (final Object Sets : config.getNode("fence", "pole").getChildrenMap().keySet())
 			{
-				int taille = position.size();
-				int x, y, z;
-				x = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "X").getInt();
-				y = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Y").getInt();
-				z = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Z").getInt();
-				final Vector3i vecteur = new Vector3i(x, y, z);
-				taille++;
-				position.put(taille, vecteur);
-				uid.put(taille, UUID.fromString(config.getNode("fence", "pole", Sets.toString(), pole.toString(), "world").getString()));
-				Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
-			}
-		}
-		//permet de savoir combien de zones differentes sont défini
-		for (final int Sets: Set.values())
-		{
-			if (nr_Set.isEmpty())
-			{
-				nr_Set.add(Sets);
-			}
-			if (!nr_Set.contains(Sets))
-			{
-				nr_Set.add(Sets);
-			}
-		}
-		//crée les listes de vecteurs que l'on va envoyer
-		final List<Vector3i> SetPosition = new ArrayList<Vector3i>();
-		final List<UUID> SetWorld = new ArrayList<UUID>();
-		for (final Object set_Number: nr_Set.toArray())
-		{
-			final int stnr = (Integer) set_Number;
-			for (final int loop : Set.keySet())
-			{
-				if (Set.get(loop).equals(stnr))
+				for (final Object pole: config.getNode("fence", "pole", Sets.toString()).getChildrenMap().keySet())
 				{
-					SetPosition.add(position.get(loop));
-					SetWorld.add(uid.get(loop));
+					int taille = position.size();
+					int x, y, z;
+					x = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "X").getInt();
+					y = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Y").getInt();
+					z = config.getNode("fence", "pole", Sets.toString(), pole.toString(), "Z").getInt();
+					final Vector3i vecteur = new Vector3i(x, y, z);
+					taille++;
+					position.put(taille, vecteur);
+					uid.put(taille, UUID.fromString(config.getNode("fence", "pole", Sets.toString(), pole.toString(), "world").getString()));
+					Set.put(taille, Integer.parseUnsignedInt(Sets.toString().substring(3)));
 				}
 			}
-			final Entity entity = Event.getTargetEntity().getBaseVehicle();
-			if (!Event.getTargetEntity().getType().equals(EntityTypes.PLAYER))
+			//permet de savoir combien de zones differentes sont défini
+			for (final int Sets: Set.values())
 			{
-				//on test si on est entre deux poteau
-				if (isBetween(SetPosition, SetWorld, Event.getTargetEntity().getLocation().getPosition(), Event.getTargetEntity().getWorld()))
+				if (nr_Set.isEmpty())
 				{
-					if (entity instanceof Animal)
+					nr_Set.add(Sets);
+				}
+				if (!nr_Set.contains(Sets))
+				{
+					nr_Set.add(Sets);
+				}
+			}
+			//crée les listes de vecteurs que l'on va envoyer
+			final List<Vector3i> SetPosition = new ArrayList<Vector3i>();
+			final List<UUID> SetWorld = new ArrayList<UUID>();
+			for (final Object set_Number: nr_Set.toArray())
+			{
+				final int stnr = (Integer) set_Number;
+				for (final int loop : Set.keySet())
+				{
+					if (Set.get(loop).equals(stnr))
 					{
-						if (config.getNode("Dodamage").getBoolean())
+						SetPosition.add(position.get(loop));
+						SetWorld.add(uid.get(loop));
+					}
+				}
+				final Entity entity = Event.getTargetEntity().getBaseVehicle();
+				if (!Event.getTargetEntity().getType().equals(EntityTypes.PLAYER))
+				{
+					//on test si on est entre deux poteau
+					if (isBetween(SetPosition, SetWorld, Event.getTargetEntity().getLocation().getPosition(), Event.getTargetEntity().getWorld()))
+					{
+						if (entity instanceof Animal)
 						{
-							if (config.getNode("KillPeacefull").getBoolean())
+							if (config.getNode("Dodamage").getBoolean())
 							{
-								final HealthData health = Event.getTargetEntity().getHealthData();
-								final Double level = 0.0;
-								health.health().set(level);
-								Event.getTargetEntity().offer(health.health().set(level));
+								if (config.getNode("KillPeacefull").getBoolean())
+								{
+									final HealthData health = ((Living)Event.getTargetEntity()).getHealthData();
+									final Double level = 0.0;
+									health.health().set(level);
+									Event.getTargetEntity().offer(health.health().set(level));
+								}
+							}
+						}
+						else
+						{
+							if (config.getNode("Dodamage").getBoolean())
+							{
+								if (config.getNode("KillMonster").getBoolean())
+								{
+									final HealthData health = ((Living)Event.getTargetEntity()).getHealthData();
+									final Double level = 0.0;
+									health.health().set(level);
+									Event.getTargetEntity().offer(health.health().set(level));
+								}
+								else
+								{
+									final HealthData health = ((Living)Event.getTargetEntity()).getHealthData();
+									final Double level = health.health().get()-0.5;
+									health.health().set(level);
+									Event.getTargetEntity().offer(health.health().set(level));
+								}
 							}
 						}
 					}
-					else
-					{
-						if (config.getNode("Dodamage").getBoolean())
-						{
-							if (config.getNode("KillMonster").getBoolean())
-							{
-								final HealthData health = Event.getTargetEntity().getHealthData();
-								final Double level = 0.0;
-								health.health().set(level);
-								Event.getTargetEntity().offer(health.health().set(level));
-							}
-							else
-							{
-								final HealthData health = Event.getTargetEntity().getHealthData();
-								final Double level = health.health().get()-0.5;
-								health.health().set(level);
-								Event.getTargetEntity().offer(health.health().set(level));
-							}
-						}
-					}
 				}
+				//ne pas oublier d'effacer les listes avant de les remplir a nouveau
+				SetPosition.clear();
+				SetWorld.clear();
 			}
-			//ne pas oublier d'effacer les listes avant de les remplir a nouveau
-			SetPosition.clear();
-			SetWorld.clear();
 		}
 	}
 

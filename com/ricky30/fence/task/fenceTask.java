@@ -196,7 +196,7 @@ public class fenceTask
 					for (final Vector3d b : raytrace(new Vector3d(pole1.getX()+0.5, pole1.getY()+0.5, pole1.getZ()+0.5), new Vector3d(pole2.getX()+0.5, pole2.getY()+0.5, pole2.getZ()+0.5)))
 					{
 						//on ajoute l'effet sur toute les lignes
-						for (int loop = 1; loop <= Size; loop++)
+						for (int loop = 0; loop <= Size; loop++)
 						{
 							world.spawnParticles(p, b.add(0, loop, 0));
 						}
